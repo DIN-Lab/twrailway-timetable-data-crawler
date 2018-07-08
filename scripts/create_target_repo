@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+import os
+import sys
+import re
+from github import Github as GitHub
+
+def create_repo(name):
+    gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
+    gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).create_repo(name)
+
+if __name__ == '__main__':
+    create_repo(sys.argv[1])

@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import os
+import re
+from github import Github as GitHub
+from datetime import datetime, date, timedelta
+
+gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
+
+all_repos = []
+for repo in gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).get_repos():
+    if re.match(r'\d{8}', repo.name):
+        all_repos.append(repo.name)
+
+all_repos.sort(reverse=True)
+
+today = date.today()
+max_day = date.today() + timedelta(days=59)
+
+target_day = None
+
+if len(all_repos) > 0:
+    next_day = datetime.strptime(all_repos[0], '%Y%m%d').date() + timedelta(days=1)
+    if next_day <= max_day:
+        target_day = next_day
+else:
+    target_day = today
+
+if target_day == None:
+    print('None')
+else:
+    print(target_day.strftime('%Y%m%d'))

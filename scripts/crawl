@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=$(cd "$(dirname "$0")"; pwd -P)
+
+$DIR/cleanup
+
+TARGET_DAY=$($DIR/determine_target_day)
+
+python $DIR/../generate_data.py $TARGET_DAY
+
+REPO_PATH=$(echo $DIR/../output)
+
+git init $REPO_PATH
+git -C $REPO_PATH checkout -b gh-pages
+git -C $REPO_PATH add -A
+git -C $REPO_PATH commit -m "Data created for $TARGET_DAY."
+
+$DIR/create_target_repo $TARGET_DAY
+
+git -C $REPO_PATH remote add origin https://$GITHUB_ACCESS_TOKEN@github.com/$GITHUB_ORG_NAME/$TARGET_DAY.git
+git -C $REPO_PATH push -u origin gh-pages
+
+$DIR/cleanup
