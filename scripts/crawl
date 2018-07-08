@@ -12,6 +12,9 @@ python $DIR/../generate_data.py $TARGET_DAY
 
 REPO_PATH=$(echo $DIR/../output)
 
+git config --global user.name $GIT_USER_NAME
+git config --global user.email $GIT_USER_EMAIL
+
 git init $REPO_PATH
 git -C $REPO_PATH checkout -b gh-pages
 git -C $REPO_PATH add -A
