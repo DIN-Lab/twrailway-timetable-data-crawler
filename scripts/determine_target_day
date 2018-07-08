@@ -11,21 +11,15 @@ for repo in gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).get_repos():
     if re.match(r'\d{8}', repo.name):
         all_repos.append(repo.name)
 
-all_repos.sort(reverse=True)
-
 today = date.today()
-max_day = date.today() + timedelta(days=59)
+required_days = []
+for delta in range(60):
+    required_days.append((today + timedelta(days=delta)).strftime('%Y%m%d'))
 
-target_day = None
+target_day = 'None'
+for required_day in required_days:
+    if not required_day in all_repos:
+        target_day = required_day
+        break
 
-if len(all_repos) > 0:
-    next_day = datetime.strptime(all_repos[0], '%Y%m%d').date() + timedelta(days=1)
-    if next_day <= max_day:
-        target_day = next_day
-else:
-    target_day = today
-
-if target_day == None:
-    print('None')
-else:
-    print(target_day.strftime('%Y%m%d'))
+print(target_day)
