@@ -3,7 +3,7 @@ from mappers import *
 
 class TrainStop(MappableObject):
     _mappings = {
-        'Station' : int_mapper('station'),
+        'Station' : string_mapper('station'),
         'Order' : int_mapper('order'),
         'ArrTime' : string_mapper('arrival_time'),
         'DepTime' : string_mapper('departure_time')
@@ -11,13 +11,13 @@ class TrainStop(MappableObject):
 
 class Train(MappableObject):
     _mappings = {
-        'Train' : int_mapper('number'),
+        'Train' : string_mapper('number'),
         'BreastFeed': boolean_mapper('has_breastfeeding_rooms'),
         'Package' : boolean_mapper('carries_packages'),
         'Dining' : boolean_mapper('has_dining_rooms'),
         'Cripple' : boolean_mapper('is_accessible'),
         'Bike' : boolean_mapper('has_bike_stands'),
-        'CarClass' : int_mapper('train_class'),
+        'CarClass' : string_mapper('train_class'),
         'TimeInfos': object_list_mapper('stops', TrainStop, 'order')
     }
 
