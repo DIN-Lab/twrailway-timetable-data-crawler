@@ -2,7 +2,7 @@
 import os
 import re
 from github import Github as GitHub
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
 
@@ -18,7 +18,7 @@ for delta in range(60):
 
 target_day = 'None'
 for required_day in required_days:
-    if not required_day in all_repos:
+    if required_day not in all_repos:
         target_day = required_day
         break
 
