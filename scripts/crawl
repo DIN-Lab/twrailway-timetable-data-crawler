@@ -2,12 +2,16 @@
 
 set -e
 
-git config --global user.name $GIT_USER_NAME
-git config --global user.email $GIT_USER_EMAIL
+# git config --global user.name $GIT_USER_NAME
+# git config --global user.email $GIT_USER_EMAIL
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-TARGET_DAY=$($DIR/determine_target_day)
+if [ -n "$START_DATE" ]; then
+  TARGET_DAY=$($DIR/determine_target_day --start $START_DATE $FORCE)
+else
+  TARGET_DAY=$($DIR/determine_target_day $FORCE)
+fi
 
 while [ "$TARGET_DAY" != "None" ]
 do
@@ -27,14 +31,14 @@ do
   git -C $REPO_PATH add -A
   git -C $REPO_PATH commit -m "Data created for $TARGET_DAY."
 
-  $DIR/create_target_repo $TARGET_DAY
+  $DIR/create_target_repo --name $TARGET_DAY $FORCE
 
   git -C $REPO_PATH remote add origin https://$GITHUB_ACCESS_TOKEN@github.com/$GITHUB_ORG_NAME/$TARGET_DAY.git
-  git -C $REPO_PATH push -u origin gh-pages
+  git -C $REPO_PATH push -u origin gh-pages $FORCE
 
   echo "Done uploading data for $TARGET_DAY"
 
-  TARGET_DAY=$($DIR/determine_target_day)
+  TARGET_DAY=$($DIR/determine_target_day --start $TARGET_DAY $FORCE)
 done
 
 echo "Finished"

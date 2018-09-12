@@ -1,25 +1,46 @@
 #!/usr/bin/env python
 import os
 import re
+import argparse
 from github import Github as GitHub
 from datetime import date, timedelta
 
-gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
 
-all_repos = []
-for repo in gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).get_repos():
-    if re.match(r'\d{8}', repo.name):
-        all_repos.append(repo.name)
+def get_target_date(start, force):
+    gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
 
-today = date.today()
-required_days = []
-for delta in range(60):
-    required_days.append((today + timedelta(days=delta)).strftime('%Y%m%d'))
+    all_repos = []
+    for repo in gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).get_repos():
+        if re.match(r'\d{8}', repo.name):
+            all_repos.append(repo.name)
 
-target_day = 'None'
-for required_day in required_days:
-    if required_day not in all_repos:
-        target_day = required_day
-        break
+    today = date.today()
+    required_days = []
+    for delta in range(60):
+        required_days.append((today + timedelta(days=delta)).strftime('%Y%m%d'))
 
-print(target_day)
+    start_found = start is None
+
+    for required_day in required_days:
+        if force:
+            if start_found:
+                return required_day
+            elif start == required_day:
+                start_found = True
+        else:
+            if start_found:
+                if required_day not in all_repos:
+                    return required_day
+            elif start == required_day:
+                start_found = True
+
+    # nothing found return None
+    return 'None'
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--force', action='store_true')
+    parser.add_argument('-s', '--start')
+    settings = parser.parse_args()
+    print(get_target_date(settings.start, settings.force))
