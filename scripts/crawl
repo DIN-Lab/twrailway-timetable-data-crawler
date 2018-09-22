@@ -33,14 +33,19 @@ do
   python $DIR/../generate_data.py $TARGET_DAY
 
   echo "Done processing data for $TARGET_DAY"
-  echo "Start uploading data for $TARGET_DAY"
 
-  git -C $REPO_PATH add -A
-  git -C $REPO_PATH commit -m "Data created for $TARGET_DAY."
+  if [ -n "$(git -C $REPO_PATH status --porcelain)" ]; then
+    echo "Start uploading data for $TARGET_DAY"
 
-  git -C $REPO_PATH push -u origin gh-pages
+    git -C $REPO_PATH add -A
+    git -C $REPO_PATH commit -m "Data created for $TARGET_DAY."
 
-  echo "Done uploading data for $TARGET_DAY"
+    git -C $REPO_PATH push -u origin gh-pages
+
+    echo "Done uploading data for $TARGET_DAY"
+  else
+    echo "No data changes, proceed to next day"
+  fi
 done
 
 echo "Finished"
