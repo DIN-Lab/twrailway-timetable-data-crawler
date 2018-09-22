@@ -4,6 +4,8 @@ python:
 branches:
   only:
     - master
+before_install:
+  - export TZ=Asia/Taipei
 install:
   - pip install -r requirements.txt
 script:
