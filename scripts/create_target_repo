@@ -10,10 +10,10 @@ def create_repo(name):
     org = gh.get_organization(os.environ.get('GITHUB_ORG_NAME'))
     try:
         repo = org.get_repo(name)
-        print(repo.clone_url)
+        print(repo.clone_url.replace('https://', 'https://{}@'.format(os.environ.get('GITHUB_ACCESS_TOKEN'))))
     except GitHubException.UnknownObjectException as e:
         repo = org.create_repo(name)
-        print(repo.clone_url)
+        print(repo.clone_url.replace('https://', 'https://{}@'.format(os.environ.get('GITHUB_ACCESS_TOKEN'))))
 
 
 if __name__ == '__main__':
