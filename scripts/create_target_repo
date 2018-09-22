@@ -5,20 +5,20 @@ from github import GithubException as GitHubException
 from github import Github as GitHub
 
 
-def create_repo(name, force):
+def create_repo(name):
+    gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
+    org = gh.get_organization(os.environ.get('GITHUB_ORG_NAME'))
     try:
-        gh = GitHub(os.environ.get('GITHUB_ACCESS_TOKEN'))
-        gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).create_repo(name)
-    except GitHubException as e:
-        print('Repo creation error: ', e)
-        if not force:
-            raise e
+        repo = org.get_repo(name)
+        print(repo.clone_url)
+    except GitHubException.UnknownObjectException as e:
+        repo = org.create_repo(name)
+        print(repo.clone_url)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--force', action='store_true')
     parser.add_argument('-n', '--name')
     settings = parser.parse_args()
 
-    create_repo(settings.name, settings.force)
+    create_repo(settings.name)

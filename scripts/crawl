@@ -2,20 +2,31 @@
 
 set -e
 
-# git config --global user.name $GIT_USER_NAME
-# git config --global user.email $GIT_USER_EMAIL
+git config --global user.name $GIT_USER_NAME
+git config --global user.email $GIT_USER_EMAIL
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
 if [ -n "$START_DATE" ]; then
-  TARGET_DAY=$($DIR/determine_target_day --start $START_DATE $FORCE)
+  TARGET_DAYS=$($DIR/determine_target_days --start $START_DATE $FORCE)
 else
-  TARGET_DAY=$($DIR/determine_target_day $FORCE)
+  TARGET_DAYS=$($DIR/determine_target_days $FORCE)
 fi
 
-while [ "$TARGET_DAY" != "None" ]
+for TARGET_DAY in $TARGET_DAYS
 do
   $DIR/cleanup
+
+  echo "Creating repo for $TARGET_DAY"
+
+  REPO_REMOTE_URL=$($DIR/create_target_repo --name $TARGET_DAY)
+
+  REPO_PATH=$(echo $DIR/../output)
+
+  git clone $REPO_REMOTE_URL $REPO_PATH
+  git -C $REPO_PATH checkout gh-pages 2>/dev/null || git -C $REPO_PATH checkout -b gh-pages
+
+  rm -rf $REPO_PATH/**/*
 
   echo "Start processing data for $TARGET_DAY"
 
@@ -24,21 +35,12 @@ do
   echo "Done processing data for $TARGET_DAY"
   echo "Start uploading data for $TARGET_DAY"
 
-  REPO_PATH=$(echo $DIR/../output)
-
-  git init $REPO_PATH
-  git -C $REPO_PATH checkout -b gh-pages
   git -C $REPO_PATH add -A
   git -C $REPO_PATH commit -m "Data created for $TARGET_DAY."
 
-  $DIR/create_target_repo --name $TARGET_DAY $FORCE
-
-  git -C $REPO_PATH remote add origin https://$GITHUB_ACCESS_TOKEN@github.com/$GITHUB_ORG_NAME/$TARGET_DAY.git
-  git -C $REPO_PATH push -u origin gh-pages $FORCE
+  git -C $REPO_PATH push -u origin gh-pages
 
   echo "Done uploading data for $TARGET_DAY"
-
-  TARGET_DAY=$($DIR/determine_target_day --start $TARGET_DAY $FORCE)
 done
 
 echo "Finished"
