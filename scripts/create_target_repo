@@ -11,7 +11,7 @@ def create_repo(name):
     try:
         repo = org.get_repo(name)
         print(repo.clone_url.replace('https://', 'https://{}@'.format(os.environ.get('GITHUB_ACCESS_TOKEN'))))
-    except GitHubException.UnknownObjectException as e:
+    except GitHubException as e:
         repo = org.create_repo(name)
         print(repo.clone_url.replace('https://', 'https://{}@'.format(os.environ.get('GITHUB_ACCESS_TOKEN'))))
 
