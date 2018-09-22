@@ -44,7 +44,7 @@ do
 
     echo "Done uploading data for $TARGET_DAY"
   else
-    echo "No data changes, proceed to next day"
+    echo "No data changed, proceed to next day"
   fi
 done
 
