@@ -12,7 +12,15 @@ def get_target_date(start, force):
     all_repos = []
     for repo in gh.get_organization(os.environ.get('GITHUB_ORG_NAME')).get_repos():
         if re.match(r'\d{8}', repo.name):
-            all_repos.append(repo.name)
+            is_empty = True
+            try:
+                if len(repo.get_contents('/')) > 0:
+                    is_empty = False
+            except:
+                pass
+
+            if not is_empty:
+                all_repos.append(repo.name)
 
     today = date.today()
     required_days = []

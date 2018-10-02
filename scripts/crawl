@@ -38,7 +38,7 @@ do
     echo "Start uploading data for $TARGET_DAY"
 
     git -C $REPO_PATH add -A
-    git -C $REPO_PATH commit -m "Data created for $TARGET_DAY."
+    git -C $REPO_PATH commit -m "Data created/updated for $TARGET_DAY." -q
 
     git -C $REPO_PATH push -u origin gh-pages
 
