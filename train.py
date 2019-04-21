@@ -18,6 +18,7 @@ class Train(MappableObject):
         'Cripple' : boolean_mapper('is_accessible'),
         'Bike' : boolean_mapper('has_bike_stands'),
         'CarClass' : string_mapper('train_class'),
+        'LineDir': string_mapper('direction'),
         'TimeInfos': object_list_mapper('stops', TrainStop, 'order')
     }
 
