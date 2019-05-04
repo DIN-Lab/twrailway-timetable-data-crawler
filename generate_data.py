@@ -70,7 +70,8 @@ def parse_data(date_string, payload):
                     'has_bike_stands' : train.has_bike_stands,
                     'train_class' : train.train_class,
                     'departs_at' : begin_stop.departure_time[:5],
-                    'arrives_at' : end_stop.arrival_time[:5]
+                    'arrives_at' : end_stop.arrival_time[:5],
+                    'direction' : train.direction
                 }
 
                 timetable_dir = create_output_dir('timetables/{0}'.format(begin_stop.station))
