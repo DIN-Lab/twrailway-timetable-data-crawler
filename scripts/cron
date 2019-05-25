@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
+
+# load env vars
+DOT_ENV_FILE=$DIR/../.env
+if test -f "$DOT_ENV_FILE"; then
+  set -o allexport
+  source $DOT_ENV_FILE
+  set +o allexport
+fi
+
+exit 0
+
 mkdir -p "$DIR/../tmp"
 LOG_PATH="$DIR/../tmp/timetables-cron.log"
 
@@ -10,6 +21,6 @@ if [ $? != 0 ]; then
   curl -X POST https://slack.com/api/files.upload \
        -F token=$SLACK_BOT_TOKEN \
        -F channels=$SLACK_NOTIFICATION_CHANNEL \
-       -F initial_comment="Timetable Cron Job Failed!" \
+       -F initial_comment="Timetable cron job failed!" \
        -F file="@$LOG_PATH"
 fi
