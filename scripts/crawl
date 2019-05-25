@@ -13,15 +13,19 @@ else
   TARGET_DAYS=$($DIR/determine_target_days $FORCE)
 fi
 
-for TARGET_DAY in $TARGET_DAYS
-do
-  $DIR/cleanup
+$DIR/cleanup
+
+generate_data() {
+  DIR=$1
+  TARGET_DAY=$2
 
   echo "Creating repo for $TARGET_DAY"
 
   REPO_REMOTE_URL=$($DIR/create_target_repo --name $TARGET_DAY)
 
-  REPO_PATH=$(echo $DIR/../output)
+  REPO_PATH=$(echo $DIR/../output/$TARGET_DAY)
+
+  rm -rf $REPO_PATH
 
   git clone $REPO_REMOTE_URL $REPO_PATH
   git -C $REPO_PATH checkout gh-pages 2>/dev/null || git -C $REPO_PATH checkout -b gh-pages
@@ -46,6 +50,12 @@ do
   else
     echo "No data changed, proceed to next day"
   fi
+}
+
+for TARGET_DAY in $TARGET_DAYS
+do
+  generate_data "$DIR" "$TARGET_DAY"
 done
 
+wait
 echo "Finished"
