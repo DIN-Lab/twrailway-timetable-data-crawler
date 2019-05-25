@@ -10,8 +10,6 @@ if test -f "$DOT_ENV_FILE"; then
   set +o allexport
 fi
 
-exit 0
-
 mkdir -p "$DIR/../tmp"
 LOG_PATH="$DIR/../tmp/timetables-cron.log"
 
