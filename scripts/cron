@@ -8,7 +8,8 @@ $DIR/crawl &> $LOG_PATH
 
 if [ $? != 0 ]; then
   curl -X POST https://slack.com/api/files.upload \
-       -F token=$SLACK_BOT_TOKEN -F channels=test \
+       -F token=$SLACK_BOT_TOKEN \
+       -F channels=$SLACK_NOTIFICATION_CHANNEL \
        -F initial_comment="Timetable Cron Job Failed!" \
        -F file="@$LOG_PATH"
 fi
