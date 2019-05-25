@@ -12,6 +12,7 @@ fi
 
 mkdir -p "$DIR/../tmp"
 LOG_PATH="$DIR/../tmp/timetables-cron.log"
+rm -rf "$LOG_PATH"
 
 $DIR/crawl &> $LOG_PATH
 
