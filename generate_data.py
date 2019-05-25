@@ -8,7 +8,7 @@ from train import Train
 from ptx import get_trains
 from dotenv import load_dotenv
 
-OUTPUT_DIR_PATH = './output'
+OUTPUT_DIR_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'output')
 
 load_dotenv()
 
