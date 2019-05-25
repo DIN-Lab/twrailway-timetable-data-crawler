@@ -17,7 +17,11 @@ $ pip install -r requirements.txt
 
 | Name | Description |
 |:----:|:----:|
-| `TRA_JSON_API_BASE_URL` | Base URL for downloading JSON data. For now, it's `http://163.29.3.98/json/`. |
+| `PTX_TIMETABLE_JSON_BASE_URL` | Base URL for downloading JSON data. See https://ptx.transportdata.tw/MOTC for details. |
+| `PTX_APP_ID` | App ID for [PTX](https://ptx.transportdata.tw/PTX/) |
+| `PTX_APP_KEY` | App key for [PTX](https://ptx.transportdata.tw/PTX/) |
+| `GIT_USER_NAME` | Git user name - the committer's name |
+| `GIT_USER_EMAIL` | Git user email - the committer's email |
 | `GITHUB_ORG_NAME` | GitHub organization name for storing processed data. |
 | `GITHUB_ACCESS_TOKEN` | GitHub access token with repository creation permission. |
 
