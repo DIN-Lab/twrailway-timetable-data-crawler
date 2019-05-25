@@ -3,23 +3,23 @@ from mappers import *
 
 class TrainStop(MappableObject):
     _mappings = {
-        'Station' : string_mapper('station'),
-        'Order' : int_mapper('order'),
-        'ArrTime' : string_mapper('arrival_time'),
-        'DepTime' : string_mapper('departure_time')
+        'StationID' : string_mapper('station'),
+        'StopSequence' : int_mapper('order'),
+        'ArrivalTime' : string_mapper('arrival_time'),
+        'DepartureTime' : string_mapper('departure_time')
     }
 
 class Train(MappableObject):
     _mappings = {
-        'Train' : string_mapper('number'),
-        'BreastFeed': boolean_mapper('has_breastfeeding_rooms'),
-        'Package' : boolean_mapper('carries_packages'),
-        'Dining' : boolean_mapper('has_dining_rooms'),
-        'Cripple' : boolean_mapper('is_accessible'),
-        'Bike' : boolean_mapper('has_bike_stands'),
-        'CarClass' : string_mapper('train_class'),
-        'LineDir': string_mapper('direction'),
-        'TimeInfos': object_list_mapper('stops', TrainStop, 'order')
+        'TrainNo' : string_mapper('number', base_key='TrainInfo'),
+        'BreastFeedFlag': boolean_mapper('has_breastfeeding_rooms', base_key='TrainInfo'),
+        'PackageServiceFlag' : boolean_mapper('carries_packages', base_key='TrainInfo'),
+        'DiningFlag' : boolean_mapper('has_dining_rooms', base_key='TrainInfo'),
+        'WheelChairFlag' : boolean_mapper('is_accessible', base_key='TrainInfo'),
+        'BikeFlag' : boolean_mapper('has_bike_stands', base_key='TrainInfo'),
+        'TrainTypeID' : string_mapper('train_class', base_key='TrainInfo'),
+        'Direction': string_mapper('direction', base_key='TrainInfo'),
+        'StopTimes': object_list_mapper('stops', TrainStop, 'order')
     }
 
     def __init__(self, json_data):

@@ -1,7 +1,13 @@
 from functools import reduce
 
-def int_mapper(object_attr_name):
-    def _handler(host_object, json_data, json_key):
+
+def int_mapper(object_attr_name, base_key=None):
+    def _handler(host_object, _json_data, json_key):
+        json_data = _json_data
+
+        if base_key is not None and base_key in json_data:
+            json_data = json_data[base_key]
+
         value = None
         if json_key in json_data:
             try:
@@ -12,17 +18,29 @@ def int_mapper(object_attr_name):
 
     return _handler
 
-def boolean_mapper(object_attr_name):
-    def _handler(host_object, json_data, json_key):
+
+def boolean_mapper(object_attr_name, is_numeric=False, base_key=None):
+    def _handler(host_object, _json_data, json_key):
+        json_data = _json_data
+
+        if base_key is not None and base_key in json_data:
+            json_data = json_data[base_key]
+
         value = False
         if json_key in json_data:
-            value = json_data[json_key] == "Y"
+            value = json_data[json_key] == (1 if is_numeric else 'Y')
         setattr(host_object, object_attr_name, value)
 
     return _handler
 
-def string_mapper(object_attr_name):
-    def _handler(host_object, json_data, json_key):
+
+def string_mapper(object_attr_name, base_key=None):
+    def _handler(host_object, _json_data, json_key):
+        json_data = _json_data
+
+        if base_key is not None and base_key in json_data:
+            json_data = json_data[base_key]
+
         value = None
         if json_key in json_data:
             try:
@@ -32,6 +50,7 @@ def string_mapper(object_attr_name):
         setattr(host_object, object_attr_name, value)
 
     return _handler
+
 
 def object_list_mapper(object_attr_name, klass, sort_key='', sort_asc=True):
     def _handler(host_object, json_data, json_key):

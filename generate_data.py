@@ -1,22 +1,17 @@
 import json
-import requests
 import re
 import os
 import sys
-import zipfile
-import errno
+import datetime
 from glob import glob
-from train import Train, TrainStop
+from train import Train
+from ptx import get_trains
+from dotenv import load_dotenv
 
-TRA_TIMETABLE_JSON_BASE_URL = os.environ.get('TRA_JSON_API_BASE_URL')
-TEMP_DIR_PATH = './tmp'
 OUTPUT_DIR_PATH = './output'
 
-def create_temp_dir(subdir=''):
-    path = os.path.join(TEMP_DIR_PATH, subdir)
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path
+load_dotenv()
+
 
 def create_output_dir(subdir=''):
     path = os.path.join(OUTPUT_DIR_PATH, subdir)
@@ -24,35 +19,22 @@ def create_output_dir(subdir=''):
         os.makedirs(path)
     return path
 
+
 def download_data(date_string):
-    zip_dir = create_temp_dir('zip')
-    zip_filename = '{0}.zip'.format(date_string)
-    response = requests.get('{0}/{1}'.format(TRA_TIMETABLE_JSON_BASE_URL, zip_filename))
-    zip_file_path = os.path.join(zip_dir, zip_filename)
-    with open(zip_file_path, 'wb') as f:
-        f.write(response.content)
+    date = datetime.datetime.strptime(date_string, '%Y%M%d')
+    iso_date_string = datetime.date.strftime(date, '%Y-%M-%d')
+    app_id = os.environ.get('PTX_APP_ID')
+    app_key = os.environ.get('PTX_APP_KEY')
+    return get_trains(iso_date_string, app_id, app_key)
 
-    json_dir = create_temp_dir('json')
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
-        zip_file.extractall(json_dir)
-
-    json_filename = '{0}.json'.format(date_string)
-    json_file_path = os.path.join(json_dir, json_filename)
-
-    if os.path.exists(json_file_path) and os.path.isfile(json_file_path):
-        with open(json_file_path, encoding='utf-8') as f:
-            json_str = f.read()
-        return json.loads(json_str)
-    else:
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), json_file_path)
 
 def parse_data(date_string, payload):
-    output_trains_dir = create_output_dir('trains')
-    output_timetables_dir = create_output_dir('timetables')
-    if not 'TrainInfos' in payload:
-        raise ValueError('`TrainInfos` not in JSON payload.')
+    output_trains_dir = create_output_dir('{0}/trains'.format(date_string))
+    output_timetables_dir = create_output_dir('{0}/timetables'.format(date_string))
+    if 'TrainTimetables' not in payload:
+        raise ValueError('`TrainTimetables` not in JSON payload.')
 
-    trains_data = payload['TrainInfos']
+    trains_data = payload['TrainTimetables']
 
     for entry in trains_data:
         train = Train(entry)
@@ -74,7 +56,7 @@ def parse_data(date_string, payload):
                     'direction' : train.direction
                 }
 
-                timetable_dir = create_output_dir('timetables/{0}'.format(begin_stop.station))
+                timetable_dir = create_output_dir('{0}/timetables/{1}'.format(date_string, begin_stop.station))
                 timetable_file_path = os.path.join(timetable_dir, '{0}.json'.format(end_stop.station))
 
                 if not os.path.exists(timetable_file_path):
@@ -115,6 +97,7 @@ def parse_data(date_string, payload):
             entries = sorted(entries, key=lambda x: x['departs_at'])
         with open(path, 'w') as f:
             json.dump(entries, f)
+
 
 def generate_data(date_string):
     json_data = download_data(date_string)
